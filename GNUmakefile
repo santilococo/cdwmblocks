@@ -34,7 +34,9 @@ xgetrootname/xgetrootname: xgetrootname/xgetrootname.c
 	${CC} -o $@ ${CFLAGS} ${X11CFLAGS} $< ${X11LIBS}
 
 clean:
-	rm -f dwmblocks sigdwmblocks/sigdwmblocks xgetrootname/xgetrootname
+	rm -f dwmblocks sigdwmblocks/sigdwmblocks xgetrootname/xgetrootname 
+	rm config.h
+	rm -r blocks
 
 BINDIR = ${DESTDIR}${PREFIX}/bin
 PIDDIR = /var/local/dwmblocks
@@ -45,6 +47,8 @@ install: all
 	chmod 755 ${BINDIR}/dwmblocks ${BINDIR}/sigdwmblocks ${BINDIR}/xgetrootname
 	mkdir -p ${PIDDIR}
 	chmod 777 ${PIDDIR}
+	cp blocks.def/* blocks
+	cp config.def.h config.h
 
 uninstall:
 	rm -f ${BINDIR}/dwmblocks ${BINDIR}/sigdwmblocks ${BINDIR}/xgetrootname

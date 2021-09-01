@@ -1,42 +1,55 @@
 #!/bin/sh
-# (for pulseaudio users)
-# This script parses the output of `pacmd list-sinks' to find volume and mute
-# status of the default audio sink and whether headphones are plugged in or not
-# Also see ../daemons/pulse_daemon.sh
-pacmd list-sinks | awk '
-    BEGIN {
-        ICONsn = "\x0c\x0b" # headphone unplugged, not muted
-        ICONsm = "\x0d\x0b" # headphone unplugged, muted
-        ICONhn = "\x0c\x0b" # headphone plugged in, not muted
-        ICONhm = "\x0d\x0b" # headphone plugged in, muted
-    }
-    f {
-        if ($1 == "muted:" && $2 == "yes") {
-            m = 1
-        } else if ($1 == "volume:") {
-            if ($3 == $10) {
-                vb = $5
-            } else {
-                vl = $5
-                vr = $12
-            }
-        } else if ($1 == "active" && $2 == "port:") {
-            if (tolower($3) ~ /headphone/)
-                h = 1
-            exit
-        }
-        next
-    }
-    $1 == "*" && $2 == "index:" {
-        f = 1
-    }
-    END {
-        if (f) {
-            printf "%s", h ? (m ? ICONhm : ICONhn) : (m ? ICONsm : ICONsn)
-            if (vb)
-                print vb
-            else
-                printf "L%s R%s\n", vl, vr
-        }
-    }
-'
+
+ICONlow="🔈"
+ICONmid="🔉"
+ICONhigh="🔊"
+ICONmute="🔇"
+ICONspeakermute="🔕"
+ICONspeaker="🔔"
+
+SINKHDMI=alsa_output.pci-0000_01_00.1.hdmi-stereo-extra1
+SINKANALOG=alsa_output.pci-0000_00_1b.0.analog-stereo
+
+checkDefaultSink() {
+    PACTLOUTPUT=`pactl info`
+
+    if echo $PACTLOUTPUT | grep -q "$SINKANALOG"; then
+	SINK=$SINKANALOG
+    elif echo $PACTLOUTPUT | grep -q "$SINKHDMI"; then
+	SINK=$SINKHDMI
+    fi
+}
+
+#VOLUME=`pulsemixer --get-volume | awk '{printf $1}'`
+VOLUME=$(pactl get-sink-volume @DEFAULT_SINK@ | awk '{printf $5}' | sed s/%//)
+MUTE=$(pactl get-sink-mute @DEFAULT_SINK@ | awk '{printf $2}')
+
+checkDefaultSink
+
+getIcon() {
+    #if [ `pulsemixer --get-mute` -eq 1 ]; then
+    if [ "$MUTE" = "yes" ]; then
+	#ICON=$ICONmute
+	if [ "$SINK" = "$SINKHDMI" ]; then
+	    ICON=$ICONspeakermute
+	elif [ "$SINK" = "$SINKANALOG" ]; then
+	    ICON=$ICONmute
+	fi
+    else
+	if [ "$SINK" = "$SINKHDMI" ]; then
+	    ICON=$ICONspeaker
+	elif [ "$SINK" = "$SINKANALOG" ]; then
+	    if [ "$VOLUME" -gt "50" ]; then
+	        ICON=$ICONhigh
+	    elif [ "$VOLUME" -gt "20" ]; then
+	        ICON=$ICONmid
+	    else
+	        ICON=$ICONlow
+	    fi
+	fi
+    fi
+    
+    printf "$ICON %s" "$VOLUME%"
+}
+
+getIcon

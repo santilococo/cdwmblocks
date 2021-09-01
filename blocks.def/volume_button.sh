@@ -1,5 +1,44 @@
 #!/bin/sh
+
+SINKHDMI=alsa_output.pci-0000_01_00.1.hdmi-stereo-extra1
+SINKANALOG=alsa_output.pci-0000_00_1b.0.analog-stereo
+
+checkDefaultSink() {
+    PACTLOUTPUT=`pactl info`
+
+    if echo $PACTLOUTPUT | grep -q "$SINKANALOG"; then
+	SINK=$SINKANALOG
+    elif echo $PACTLOUTPUT | grep -q "$SINKHDMI"; then
+	SINK=$SINKHDMI
+    fi
+}
+
+changeDefaultSink() {
+    if [ "$SINK" = "$SINKANALOG" ]; then
+	pactl set-default-sink $SINKHDMI
+    elif [ "$SINK" = "$SINKHDMI" ]; then
+	pactl set-default-sink $SINKANALOG
+    fi
+}
+
+managePulsemixer() {
+    if pgrep "pulsemixer" > /dev/null; then
+	pkill "pulsemixer"
+    else
+	"$TERMINAL" -e "pulsemixer"
+    fi
+}
+
+refreshVolumeBlock() {
+    sigdwmblocks 2
+}
+
+checkDefaultSink
+
 case "$1" in
-    1) pactl set-sink-mute @DEFAULT_SINK@ toggle ;;
-    3) pactl set-sink-volume @DEFAULT_SINK@ 50% ;;
+    1) managePulsemixer ;;
+    2) changeDefaultSink;;
+    3) pactl set-sink-mute @DEFAULT_SINK@ toggle;;
 esac
+
+refreshVolumeBlock
