@@ -6,6 +6,8 @@ ICONhigh="🔊"
 ICONmute="🔇"
 ICONspeakermute="🔕"
 ICONspeaker="🔔"
+ICONheadphone="🎧"
+#ICONspeaker="📢"
 
 #SINKHDMI=alsa_output.pci-0000_01_00.1.hdmi-stereo-extra1
 SINKHDMI=alsa_output.pci-0000_01_00.1.hdmi-stereo
@@ -28,29 +30,23 @@ MUTE=$(pactl get-sink-mute @DEFAULT_SINK@ | awk '{printf $2}')
 checkDefaultSink
 
 getIcon() {
-    #if [ `pulsemixer --get-mute` -eq 1 ]; then
     if [ "$MUTE" = "yes" ]; then
-	#ICON=$ICONmute
-	if [ "$SINK" = "$SINKHDMI" ]; then
-	    ICON=$ICONspeakermute
-	elif [ "$SINK" = "$SINKANALOG" ]; then
-	    ICON=$ICONmute
-	fi
+	ICON=$ICONmute
     else
-	if [ "$SINK" = "$SINKHDMI" ]; then
-	    ICON=$ICONspeaker
-	elif [ "$SINK" = "$SINKANALOG" ]; then
-	    if [ "$VOLUME" -gt "50" ]; then
-	        ICON=$ICONhigh
-	    elif [ "$VOLUME" -gt "20" ]; then
-	        ICON=$ICONmid
-	    else
-	        ICON=$ICONlow
-	    fi
+	if [ "$VOLUME" -gt "50" ]; then
+	    ICON=$ICONhigh
+	elif [ "$VOLUME" -gt "20" ]; then
+	    ICON=$ICONmid
+	else
+	    ICON=$ICONlow
 	fi
     fi
-    
-    printf "$ICON %s" "$VOLUME%"
+
+    if [ "$SINK" = "$SINKHDMI" ]; then
+	printf "$ICON %s" "$VOLUME%"
+    elif [ "$SINK" = "$SINKANALOG" ]; then
+	printf "$ICON %s" "$VOLUME% $ICONheadphone"
+    fi
 }
 
 getIcon
