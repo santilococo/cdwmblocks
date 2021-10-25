@@ -7,5 +7,5 @@ case "$1" in
 esac
 
 sigdwmblocks 3
-/.$HOME/mailCheck > /dev/null
+/.$HOME/.local/bin/mailCheck > /dev/null
 sigdwmblocks 3
