@@ -1,6 +1,7 @@
 #!/bin/sh
 
-SINKHDMI=alsa_output.pci-0000_01_00.1.hdmi-stereo-extra1
+#SINKHDMI=alsa_output.pci-0000_01_00.1.hdmi-stereo-extra1
+SINKHDMI=alsa_output.pci-0000_01_00.1.hdmi-stereo
 SINKANALOG=alsa_output.pci-0000_00_1b.0.analog-stereo
 
 checkDefaultSink() {
