@@ -30,6 +30,14 @@ managePulsemixer() {
     fi
 }
 
+manageAlsamixer() {
+    if pgrep "alsamixer" > /dev/null; then
+	pkill "alsamixer"
+    else
+	"$TERMINAL" -e "alsamixer"
+    fi
+}
+
 refreshVolumeBlock() {
     sigdwmblocks 2
 }
@@ -37,7 +45,7 @@ refreshVolumeBlock() {
 checkDefaultSink
 
 case "$1" in
-    1) managePulsemixer ;;
+    1) manageAlsamixer ;;
     2) changeDefaultSink;;
     3) pactl set-sink-mute @DEFAULT_SINK@ toggle;;
 esac
