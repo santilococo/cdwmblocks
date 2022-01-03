@@ -11,7 +11,8 @@ TEMP_LOW=30
 # https://askubuntu.com/questions/1262643/terminal-command-to-show-a-summary-of-memory-used-temperature-and-gpu-use-in-a
 # https://gist.github.com/Ropid/077816cec9e5a826ad417fc6ce5ac41a
 
-TEMP_CPU=`sensors | awk '{if (NR == 32) {print $4}}' | sed 's/+//' | sed 's/..°C//'`
+#TEMP_CPU=$(sensors -A | awk 'NR == v+1 {print $4}' v="$(sensors -A | awk '{ if ($1 == "coretemp-isa-0000") {print NR}}')" | sed 's/+//' | sed 's/..°C//')
+TEMP_CPU=$(sensors -A | awk '/Package/ {print $4}' | sed 's/+//' | sed 's/..°C//')
 TEMP_GPU=`nvidia-smi | awk '{if (NR == 10) {print $3}}' | sed 's/C//'`
 
 #ICON="💻"
