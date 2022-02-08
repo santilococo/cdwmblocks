@@ -7,9 +7,11 @@ X11CFLAGS = $(shell pkg-config --cflags x11)
 X11LIBS = $(shell pkg-config --libs x11)
 
 all: dwmblocks sigdwmblocks/sigdwmblocks xgetrootname/xgetrootname
+laptop: LFLAG = -DLAPTOP
+laptop: install
 
 dwmblocks: dwmblocks.c config.h block.h
-	${CC} -o $@ -Wno-missing-field-initializers -Wno-unused-parameter ${CFLAGS} ${X11CFLAGS} $< ${X11LIBS}
+	${CC} -o $@ -Wno-missing-field-initializers -Wno-unused-parameter ${LFLAG} ${CFLAGS} ${X11CFLAGS} $< ${X11LIBS}
 
 E0BLOCKS = $(abspath blocks)
 # two level escaping of `\', one for sed and one for C
