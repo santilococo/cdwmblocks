@@ -13,7 +13,7 @@ TEMP_LOW=30
 
 #TEMP_CPU=$(sensors -A | awk 'NR == v+1 {print $4}' v="$(sensors -A | awk '{ if ($1 == "coretemp-isa-0000") {print NR}}')" | sed 's/+//' | sed 's/..°C//')
 TEMP_CPU=$(sensors -A | awk '/Package/ {print $4}' | sed 's/+//' | sed 's/..°C//')
-TEMP_GPU=`nvidia-smi | awk '{if (NR == 10) {print $3}}' | sed 's/C//'`
+[ -v LAPTOP ] || TEMP_GPU=`nvidia-smi | awk '{if (NR == 10) {print $3}}' | sed 's/C//'`
 
 #ICON="💻"
 
@@ -35,4 +35,8 @@ else
     ICON="🥶"
 fi
 
-printf "$ICON %s°C : %s°C" "$TEMP_CPU" "$TEMP_GPU"
+if [ -v LAPTOP ]; then
+    printf "$ICON %s°C" "$TEMP_CPU"
+else
+    printf "$ICON %s°C : %s°C" "$TEMP_CPU" "$TEMP_GPU"
+fi
