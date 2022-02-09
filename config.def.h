@@ -49,6 +49,9 @@ static Block blocks[] = {
         { PATH("notifications.sh"),	PATH("notifications_button.sh"), 0,		6},
         { PATH("volume.sh"),            PATH("volume_button.sh"),	0,		2},
         { PATH("mail.sh"),		PATH("mail_button.sh"),		0,		3},
+#ifdef LAPTOP
+        { PATH("battery.sh"),		PATH("battery_button.sh"),	60,		7},
+#endif
         { PATH("cpu_temp.sh"),          PATH("cpu_temp_button.sh"),	15,		4},
         { NULL } /* just to mark the end of the array */
 };
