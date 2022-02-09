@@ -12,6 +12,6 @@ case "$(cat "$battery/status" 2>&1)" in
 esac
 
 capacity="$(cat "$battery/capacity" 2>&1)"
-capacity=$(echo "$capacity/88*100" | bc -l)
+capacity=$(echo "$capacity/83*100" | bc -l)
 
 printf "%s %.0f%%" "$status" "$capacity"
