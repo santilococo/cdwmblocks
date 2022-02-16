@@ -1,17 +1,25 @@
 #!/bin/sh
 
 battery=/sys/class/power_supply/BAT0
+status=$(cat "$battery/status")
+maxCapacity=85
 
+#case "$(cat "$battery/status" 2>&1)" in
 case "$(cat "$battery/status" 2>&1)" in
-    "Full") status="⚡" ;;
-    "Discharging") status="🔋" ;;
-    "Charging") status="🔌" ;;
-    "Not charging") status="🛑" ;;
-    "Unknown") status="♻️" ;;
+    "Full") statusIcon="⚡" ;;
+    "Discharging") statusIcon="🔋" ;;
+    "Charging") statusIcon="🔌" ;;
+    "Not charging") statusIcon="🛑" ;;
+    "Unknown") statusIcon="♻️" ;;
     *) exit 1 ;;
 esac
 
-capacity="$(cat "$battery/capacity" 2>&1)"
-capacity=$(echo "$capacity/83*100" | bc -l)
+if [ "$status" = "Full" ]; then
+    printf "%s 100%%" "$statusIcon"
+    exit 0
+fi
 
-printf "%s %.0f%%" "$status" "$capacity"
+capacity="$(cat "$battery/capacity" 2>&1)"
+capacity=$(echo "$capacity/$maxCapacity*100" | bc -l)
+
+printf "%s %.0f%%" "$statusIcon" "$capacity"
