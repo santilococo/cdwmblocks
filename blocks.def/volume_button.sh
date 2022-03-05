@@ -15,6 +15,8 @@ checkDefaultSink() {
 }
 
 changeDefaultSink() {
+    [ -v LAPTOP ] && return
+
     if [ "$SINK" = "$SINKANALOG" ]; then
 	pactl set-default-sink $SINKHDMI
     elif [ "$SINK" = "$SINKHDMI" ]; then

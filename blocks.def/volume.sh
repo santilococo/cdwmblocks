@@ -14,6 +14,11 @@ SINKHDMI=alsa_output.pci-0000_01_00.1.hdmi-stereo
 SINKANALOG=alsa_output.pci-0000_00_1b.0.analog-stereo
 
 checkDefaultSink() {
+    if [ -v LAPTOP ]; then
+	SINK=$SINKANALOG
+	return
+    fi
+
     PACTLOUTPUT=`pactl info`
 
     if echo $PACTLOUTPUT | grep -q "$SINKANALOG"; then
@@ -40,6 +45,11 @@ getIcon() {
 	else
 	    ICON=$ICONlow
 	fi
+    fi
+
+    if [ -v LAPTOP ]; then
+	printf "$ICON %s" "$VOLUME%"
+	return
     fi
 
     if [ "$SINK" = "$SINKHDMI" ]; then
