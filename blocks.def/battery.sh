@@ -1,8 +1,7 @@
 #!/bin/sh
 
 battery=/sys/class/power_supply/BAT0
-status=$(cat "$battery/status")
-maxCapacity=85
+status=$(cat "$battery/status" 2>&1)
 
 #case "$(cat "$battery/status" 2>&1)" in
 case "$(cat "$battery/status" 2>&1)" in
@@ -19,7 +18,8 @@ if [ "$status" = "Full" ]; then
     exit 0
 fi
 
-capacity="$(cat "$battery/capacity" 2>&1)"
-capacity=$(echo "$capacity/$maxCapacity*100" | bc -l)
+chargeNow=$(cat "$battery/charge_now" 2>&1)
+chargeFull=$(cat "$battery/charge_full" 2>&1)
+capacity=$(echo "$chargeNow/$chargeFull*100" | bc -l)
 
 printf "%s %.0f%%" "$statusIcon" "$capacity"
